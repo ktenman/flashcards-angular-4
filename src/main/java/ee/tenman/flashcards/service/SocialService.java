@@ -1,13 +1,15 @@
 package ee.tenman.flashcards.service;
 
 import ee.tenman.flashcards.domain.Authority;
+import ee.tenman.flashcards.domain.Card;
 import ee.tenman.flashcards.domain.User;
 import ee.tenman.flashcards.repository.AuthorityRepository;
+import ee.tenman.flashcards.repository.CardRepository;
 import ee.tenman.flashcards.repository.UserRepository;
 
-import ee.tenman.flashcards.security.SecurityUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.simpleflatmapper.csv.CsvParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,10 +19,15 @@ import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
 public class SocialService {
@@ -37,15 +44,18 @@ public class SocialService {
 
     private final MailService mailService;
 
+    private final CardRepository cardRepository;
+
     public SocialService(UsersConnectionRepository usersConnectionRepository, AuthorityRepository authorityRepository,
-            PasswordEncoder passwordEncoder, UserRepository userRepository,
-            MailService mailService) {
+                         PasswordEncoder passwordEncoder, UserRepository userRepository,
+                         MailService mailService, CardRepository cardRepository) {
 
         this.usersConnectionRepository = usersConnectionRepository;
         this.authorityRepository = authorityRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.mailService = mailService;
+        this.cardRepository = cardRepository;
     }
 
     public void deleteUserSocialConnection(String login) {
@@ -110,21 +120,34 @@ public class SocialService {
 
         User user = userRepository.save(newUser);
 
-        Optional<User> userOptional = userRepository.findOneByLogin(login);
-
-        if (userOptional.isPresent()){
-            log.debug("\n\n\nSsocial user: {}\n\n\n", userOptional.get());
-            log.debug("\n\n\nSsocial user id: {}\n\n\n", userOptional.get().getId());
-        } else {
-            log.debug("\n\n\n ZZZ \n\n\n");
-        }
+        saveDefaultCards(user);
 
         return user;
     }
 
+    private void saveDefaultCards(User user) {
+        try {
+            FileReader reader = new FileReader("flashcards.csv");
+            CsvParser
+                .separator(';')
+                .stream(reader)
+                .forEach(s -> {
+                    Card card = new Card();
+                    card.setFront(new String(s[0].getBytes(), UTF_8));
+                    card.setBack(new String(s[1].getBytes(), UTF_8));
+                    card.setUser(user);
+                    card.setKnown(false);
+                    cardRepository.save(card);
+                });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     /**
      * @return login if provider manage a login like Twitter or Github otherwise email address.
-     *         Because provider like Google or Facebook didn't provide login or login like "12099388847393"
+     * Because provider like Google or Facebook didn't provide login or login like "12099388847393"
      */
     private String getLoginDependingOnProviderId(UserProfile userProfile, String providerId) {
         switch (providerId) {

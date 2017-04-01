@@ -4,6 +4,7 @@ import ee.tenman.flashcards.FlashcardsApp;
 import ee.tenman.flashcards.domain.Authority;
 import ee.tenman.flashcards.domain.User;
 import ee.tenman.flashcards.repository.AuthorityRepository;
+import ee.tenman.flashcards.repository.CardRepository;
 import ee.tenman.flashcards.repository.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +39,9 @@ public class SocialServiceIntTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CardRepository cardRepository;
+
     @Mock
     private MailService mockMailService;
 
@@ -57,7 +61,7 @@ public class SocialServiceIntTest {
         when(mockUsersConnectionRepository.createConnectionRepository(anyString())).thenReturn(mockConnectionRepository);
 
         socialService = new SocialService(mockUsersConnectionRepository, authorityRepository,
-            passwordEncoder, userRepository, mockMailService);
+            passwordEncoder, userRepository, mockMailService, cardRepository);
     }
 
     @Test

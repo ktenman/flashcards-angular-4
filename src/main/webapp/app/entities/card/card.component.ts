@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit, OnDestroy, PipeTransform, Pipe} from '@angular/core';
 import { Response } from '@angular/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Rx';
@@ -8,6 +8,15 @@ import { Card } from './card.model';
 import { CardService } from './card.service';
 import { ITEMS_PER_PAGE, Principal } from '../../shared';
 import { PaginationConfig } from '../../blocks/config/uib-pagination.config';
+
+
+@Pipe({name: 'replaceLineBreaks'})
+export class ReplaceLineBreaks implements PipeTransform {
+    transform(value: string): string {
+        let newValue = value.replace(/\n/g, '<br/>');
+        return `${newValue}`;
+    }
+}
 
 @Component({
     selector: 'jhi-card',
@@ -53,8 +62,6 @@ cards: Card[];
         return item.id;
     }
 
-
-
     byteSize(field) {
         return this.dataUtils.byteSize(field);
     }
@@ -65,7 +72,6 @@ cards: Card[];
     registerChangeInCards() {
         this.eventSubscriber = this.eventManager.subscribe('cardListModification', (response) => this.loadAll());
     }
-
 
     private onError (error) {
         this.alertService.error(error.message, null, null);

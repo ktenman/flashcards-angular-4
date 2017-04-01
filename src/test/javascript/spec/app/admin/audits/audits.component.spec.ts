@@ -60,14 +60,14 @@ describe('Component Tests', () => {
             });
         });
 
-        xdescribe('previousMonth function ', () => {
+        describe('previousMonth function ', () => {
             it('should set toDate to current date', () => {
                comp.previousMonth();
                expect(comp.fromDate).toBe(getDate(false));
             });
         });
 
-        xdescribe('By default, on init', () => {
+        describe('By default, on init', () => {
             it('should set all default values correctly', () => {
                fixture.detectChanges();
                expect(comp.toDate).toBe(getDate());

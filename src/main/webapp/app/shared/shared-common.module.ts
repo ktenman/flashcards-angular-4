@@ -11,7 +11,7 @@ import {
     JhiAlertComponent,
     JhiAlertErrorComponent
 } from './';
-
+import {ReplaceLineBreaks} from "../entities/card/card.component";
 
 export function alertServiceProvider(sanitizer: Sanitizer, translateService: TranslateService) {
     // set below to true to make alerts look like toast
@@ -25,6 +25,7 @@ export function alertServiceProvider(sanitizer: Sanitizer, translateService: Tra
     ],
     declarations: [
         FindLanguageFromKeyPipe,
+        ReplaceLineBreaks,
         JhiAlertComponent,
         JhiAlertErrorComponent
     ],
@@ -40,6 +41,7 @@ export function alertServiceProvider(sanitizer: Sanitizer, translateService: Tra
     exports: [
         FlashcardsSharedLibsModule,
         FindLanguageFromKeyPipe,
+        ReplaceLineBreaks,
         JhiAlertComponent,
         JhiAlertErrorComponent
     ]
