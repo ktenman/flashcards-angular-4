@@ -5,6 +5,7 @@ import ee.tenman.flashcards.domain.User;
 import ee.tenman.flashcards.repository.AuthorityRepository;
 import ee.tenman.flashcards.repository.UserRepository;
 
+import ee.tenman.flashcards.security.SecurityUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -107,7 +108,18 @@ public class SocialService {
         newUser.setLangKey(langKey);
         newUser.setImageUrl(imageUrl);
 
-        return userRepository.save(newUser);
+        User user = userRepository.save(newUser);
+
+        Optional<User> userOptional = userRepository.findOneByLogin(login);
+
+        if (userOptional.isPresent()){
+            log.debug("\n\n\nSsocial user: {}\n\n\n", userOptional.get());
+            log.debug("\n\n\nSsocial user id: {}\n\n\n", userOptional.get().getId());
+        } else {
+            log.debug("\n\n\n ZZZ \n\n\n");
+        }
+
+        return user;
     }
 
     /**
