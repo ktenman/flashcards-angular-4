@@ -19,9 +19,10 @@ import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
@@ -127,7 +128,10 @@ public class SocialService {
 
     private void saveDefaultCards(User user) {
         try {
-            FileReader reader = new FileReader("flashcards.csv");
+           // FileReader reader = new FileReader("  flashcards.csv");
+            InputStream inputStream =
+                getClass().getClassLoader().getResourceAsStream("flashcards.csv");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream ));
             CsvParser
                 .separator(';')
                 .stream(reader)
