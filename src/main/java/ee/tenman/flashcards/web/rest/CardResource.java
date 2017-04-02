@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import static ee.tenman.flashcards.security.SecurityUtils.getCurrentUserLogin;
 
@@ -120,6 +121,18 @@ public class CardResource {
         log.debug("REST request to delete Card : {}", id);
         cardService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+    }
+
+    @GetMapping("/get-random-card")
+    @Timed
+    public ResponseEntity<CardDTO> getRandomCard() {
+        log.debug("REST request to get random Card");
+//        List<CardDTO> all = cardService.findAll();
+//        Random random = new Random();
+//        int index = random.nextInt(all.size());
+//        CardDTO cardDTO = all.get(index);
+        CardDTO cardDTO = cardService.findRandomCard();
+        return ResponseUtil.wrapOrNotFound(Optional.ofNullable(cardDTO));
     }
 
 }

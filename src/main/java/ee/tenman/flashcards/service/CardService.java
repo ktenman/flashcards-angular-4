@@ -7,15 +7,13 @@ import ee.tenman.flashcards.service.dto.CardDTO;
 import ee.tenman.flashcards.service.mapper.CardMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static java.util.Optional.ofNullable;
 
 /**
  * Service Implementation for managing Card.
@@ -30,12 +28,12 @@ public class CardService {
 
     private final CardMapper cardMapper;
 
-    @Inject
-    private UserService userService;
+    private final UserService userService;
 
-    public CardService(CardRepository cardRepository, CardMapper cardMapper) {
+    public CardService(CardRepository cardRepository, CardMapper cardMapper, UserService userService) {
         this.cardRepository = cardRepository;
         this.cardMapper = cardMapper;
+        this.userService = userService;
     }
 
     /**
@@ -52,8 +50,7 @@ public class CardService {
         }
         Card card = cardMapper.cardDTOToCard(cardDTO);
         card = cardRepository.save(card);
-        CardDTO result = cardMapper.cardToCardDTO(card);
-        return result;
+        return cardMapper.cardToCardDTO(card);
     }
 
     /**
@@ -64,10 +61,9 @@ public class CardService {
     @Transactional(readOnly = true)
     public List<CardDTO> findAll() {
         log.debug("Request to get all Cards");
-        List<CardDTO> result = cardRepository.findByUserIsCurrentUser().stream()
+        return cardRepository.findByUserIsCurrentUser().stream()
             .map(cardMapper::cardToCardDTO)
             .collect(Collectors.toCollection(LinkedList::new));
-        return result;
     }
 
     /**
@@ -80,8 +76,7 @@ public class CardService {
     public CardDTO findOne(Long id) {
         log.debug("Request to get Card : {}", id);
         Card card = cardRepository.findOne(id);
-        CardDTO cardDTO = cardMapper.cardToCardDTO(card);
-        return cardDTO;
+        return cardMapper.cardToCardDTO(card);
     }
 
     /**
@@ -92,5 +87,13 @@ public class CardService {
     public void delete(Long id) {
         log.debug("Request to delete Card : {}", id);
         cardRepository.delete(id);
+    }
+
+    @Transactional(readOnly = true)
+    public CardDTO findRandomCard() {
+        log.debug("Request to get random Card");
+        List<Card> cards = cardRepository.findRandomCardsByUserIsCurrentUser(new PageRequest(0, 1));
+        return cards.stream().findFirst().isPresent() ?
+            cardMapper.cardToCardDTO(cards.stream().findFirst().get()) : null;
     }
 }

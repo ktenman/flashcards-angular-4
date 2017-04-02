@@ -135,10 +135,14 @@ public class SocialService {
             CsvParser
                 .separator(';')
                 .stream(reader)
-                .forEach(s -> {
+                .forEach((String[] s) -> {
                     Card card = new Card();
-                    card.setFront(new String(s[0].getBytes(), UTF_8));
-                    card.setBack(new String(s[1].getBytes(), UTF_8));
+                    try{
+                        card.setFront(s[0]);
+                        card.setBack(s[1]);
+                    } catch(ArrayIndexOutOfBoundsException e){
+                        throw new ArrayIndexOutOfBoundsException("Wrong array {}" + e);
+                    }
                     card.setUser(user);
                     card.setKnown(false);
                     cardRepository.save(card);
