@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -87,13 +88,5 @@ public class CardService {
     public void delete(Long id) {
         log.debug("Request to delete Card : {}", id);
         cardRepository.delete(id);
-    }
-
-    @Transactional(readOnly = true)
-    public CardDTO findRandomCard() {
-        log.debug("Request to get random Card");
-        List<Card> cards = cardRepository.findRandomCardsByUserIsCurrentUser(new PageRequest(0, 1));
-        return cards.stream().findFirst().isPresent() ?
-            cardMapper.cardToCardDTO(cards.stream().findFirst().get()) : null;
     }
 }

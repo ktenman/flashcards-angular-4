@@ -127,7 +127,13 @@ public class CardResource {
     @Timed
     public ResponseEntity<CardDTO> getRandomCard() {
         log.debug("REST request to get random Card");
-        CardDTO cardDTO = cardService.findRandomCard();
+        List<CardDTO> cards = cardService.findAll();
+        CardDTO cardDTO = null;
+        if (cards.size() > 0) {
+            Random random = new Random();
+            int index = random.nextInt(cards.size());
+            cardDTO = cards.get(index);
+        }
         return ResponseUtil.wrapOrNotFound(Optional.ofNullable(cardDTO));
     }
 

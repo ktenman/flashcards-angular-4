@@ -516,4 +516,5 @@ public class UserResourceIntTest {
         userB.setLogin("BBB");
         assertThat(userA).isNotEqualTo(userB);
     }
+
 }

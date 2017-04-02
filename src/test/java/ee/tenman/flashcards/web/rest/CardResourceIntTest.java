@@ -214,6 +214,24 @@ public class CardResourceIntTest {
             .andExpect(jsonPath("$.known").value(DEFAULT_KNOWN.booleanValue()));
     }
 
+
+    @Ignore
+    @Test
+    @Transactional
+    public void getRandomCard() throws Exception {
+        // Initialize the database
+        cardRepository.saveAndFlush(card);
+
+        // Get the card
+        restCardMockMvc.perform(get("/api/get-random-card"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.id").value(card.getId().intValue()))
+            .andExpect(jsonPath("$.front").value(DEFAULT_FRONT.toString()))
+            .andExpect(jsonPath("$.back").value(DEFAULT_BACK.toString()))
+            .andExpect(jsonPath("$.known").value(DEFAULT_KNOWN.booleanValue()));
+    }
+
     @Test
     @Transactional
     public void getNonExistingCard() throws Exception {
