@@ -23,7 +23,8 @@ export class ReplaceLineBreaks implements PipeTransform {
     templateUrl: './card.component.html'
 })
 export class CardComponent implements OnInit, OnDestroy {
-cards: Card[];
+    randomCard: Card;
+    cards: Card[];
     currentAccount: any;
     eventSubscriber: Subscription;
 
@@ -46,8 +47,16 @@ cards: Card[];
             (res: Response) => this.onError(res.json())
         );
     }
+
+    loadRandom() {
+        this.cardService.findRandom().subscribe(card => {
+            this.randomCard = card;
+        });
+    }
+
     ngOnInit() {
         this.loadAll();
+        this.loadRandom();
         this.principal.identity().then((account) => {
             this.currentAccount = account;
         });

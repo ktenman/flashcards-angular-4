@@ -32,15 +32,18 @@ export class CardService {
 
     query(req?: any): Observable<Response> {
         let options = this.createRequestOption(req);
-        return this.http.get(this.resourceUrl, options)
-        ;
+        return this.http.get(this.resourceUrl, options);
     }
 
     delete(id: number): Observable<Response> {
         return this.http.delete(`${this.resourceUrl}/${id}`);
     }
 
-
+    findRandom(): Observable<Card> {
+        return this.http.get('api/get-random-card').map((res: Response) => {
+            return res.json();
+        });
+    }
 
     private createRequestOption(req?: any): BaseRequestOptions {
         let options: BaseRequestOptions = new BaseRequestOptions();
