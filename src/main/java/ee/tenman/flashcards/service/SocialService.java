@@ -140,12 +140,12 @@ public class SocialService {
                     try{
                         card.setFront(s[0]);
                         card.setBack(s[1]);
+                        card.setUser(user);
+                        card.setKnown(false);
+                        cardRepository.save(card);
                     } catch(ArrayIndexOutOfBoundsException e){
                         throw new ArrayIndexOutOfBoundsException("Wrong array {}" + e);
                     }
-                    card.setUser(user);
-                    card.setKnown(false);
-                    cardRepository.save(card);
                 });
         } catch (IOException e) {
             e.printStackTrace();
